@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/store";
 import MobileFrame from "@/components/ui/MobileFrame";
@@ -8,20 +8,16 @@ import RewardCard from "@/components/ui/RewardCard";
 import { getRecompensesAvecEtat } from "@/store/selectors";
 import type { RecompenseAvecEtat } from "@/store/types";
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function CataloguePage({ params }: PageProps) {
-  const { id } = use(params);
+export default function CataloguePage() {
   const router = useRouter();
   const famille = useStore((s) => s.famille);
+  const activeEnfantId = useStore((s) => s.activeEnfantId);
   const rachatRecompense = useStore((s) => s.rachatRecompense);
 
   const [onglet, setOnglet] = useState<"privilege" | "butin">("privilege");
   const [confirm, setConfirm] = useState<RecompenseAvecEtat | null>(null);
 
-  const enfant = famille?.enfants.find((e) => e.id === id);
+  const enfant = famille?.enfants.find((e) => e.id === activeEnfantId);
 
   useEffect(() => {
     if (!enfant) router.replace("/famille");
@@ -37,9 +33,9 @@ export default function CataloguePage({ params }: PageProps) {
   };
 
   const handleConfirm = () => {
-    if (!confirm) return;
+    if (!confirm || !activeEnfantId) return;
     try {
-      rachatRecompense(id, confirm.id);
+      rachatRecompense(activeEnfantId, confirm.id);
     } catch {}
     setConfirm(null);
   };
@@ -47,15 +43,11 @@ export default function CataloguePage({ params }: PageProps) {
   return (
     <>
       <MobileFrame>
-        {/* Header */}
         <div className="bg-prestige px-5 pt-10 pb-5">
           <h1 className="text-white font-extrabold text-xl">🎁 Catalogue</h1>
-          <p className="text-white/70 text-sm mt-1">
-            {enfant.credits} Crédits disponibles
-          </p>
+          <p className="text-white/70 text-sm mt-1">{enfant.credits} Crédits disponibles</p>
         </div>
 
-        {/* Onglets */}
         <div className="flex mx-5 mt-4 gap-2">
           {(["privilege", "butin"] as const).map((tab) => (
             <button
@@ -72,7 +64,6 @@ export default function CataloguePage({ params }: PageProps) {
           ))}
         </div>
 
-        {/* Liste */}
         <div className="flex-1 px-5 py-4 flex flex-col gap-2">
           {recompenses.map((r) => (
             <RewardCard key={r.id} recompense={r} onClick={() => handleEchange(r)} />
@@ -80,7 +71,6 @@ export default function CataloguePage({ params }: PageProps) {
         </div>
       </MobileFrame>
 
-      {/* Confirmation dialog */}
       {confirm && (
         <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50 pb-8 px-5">
           <div className="bg-white rounded-3xl p-6 w-full max-w-mobile shadow-2xl">

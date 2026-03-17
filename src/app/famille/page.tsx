@@ -10,6 +10,7 @@ import { getTitreNiveau } from "@/store/selectors";
 export default function FamillePage() {
   const router = useRouter();
   const famille = useStore((s) => s.famille);
+  const setActiveEnfant = useStore((s) => s.setActiveEnfant);
 
   useEffect(() => {
     if (!famille) router.replace("/onboarding");
@@ -31,7 +32,7 @@ export default function FamillePage() {
           {famille.enfants.map((enfant) => (
             <button
               key={enfant.id}
-              onClick={() => router.push(`/enfant/${enfant.id}`)}
+              onClick={() => { setActiveEnfant(enfant.id); router.push("/enfant"); }}
               className="bg-white rounded-3xl p-5 flex flex-col items-center gap-3 shadow-sm border border-gray-100 hover:shadow-md active:scale-95 transition-all"
             >
               <AvatarCircle avatarId={enfant.avatarId} niveau={enfant.niveau} size="md" />

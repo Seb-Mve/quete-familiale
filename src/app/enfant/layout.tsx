@@ -1,13 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useStore } from "@/store";
 import TabBar, { type ActiveTab } from "@/components/ui/TabBar";
-import { use } from "react";
-
-interface LayoutProps {
-  children: React.ReactNode;
-  params: Promise<{ id: string }>;
-}
 
 function getActiveTab(pathname: string): ActiveTab {
   if (pathname.includes("/catalogue")) return "catalogue";
@@ -15,15 +10,15 @@ function getActiveTab(pathname: string): ActiveTab {
   return "home";
 }
 
-export default function EnfantLayout({ children, params }: LayoutProps) {
-  const { id } = use(params);
+export default function EnfantLayout({ children }: { children: React.ReactNode }) {
+  const activeEnfantId = useStore((s) => s.activeEnfantId);
   const pathname = usePathname();
   const activeTab = getActiveTab(pathname);
 
   return (
     <div className="pb-20">
       {children}
-      <TabBar activeTab={activeTab} enfantId={id} />
+      {activeEnfantId && <TabBar activeTab={activeTab} enfantId={activeEnfantId} />}
     </div>
   );
 }

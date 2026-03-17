@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/store";
 import MobileFrame from "@/components/ui/MobileFrame";
@@ -10,18 +10,14 @@ import TrophyBadge from "@/components/ui/TrophyBadge";
 import { getTitreNiveau, getTropheesAvecProgression } from "@/store/selectors";
 import { TITRES_NIVEAU } from "@/data/progression";
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function ProfilPage({ params }: PageProps) {
-  const { id } = use(params);
+export default function ProfilPage() {
   const router = useRouter();
   const famille = useStore((s) => s.famille);
+  const activeEnfantId = useStore((s) => s.activeEnfantId);
   const completions = useStore((s) => s.completions);
   const rachats = useStore((s) => s.rachats);
 
-  const enfant = famille?.enfants.find((e) => e.id === id);
+  const enfant = famille?.enfants.find((e) => e.id === activeEnfantId);
 
   useEffect(() => {
     if (!enfant) router.replace("/famille");
@@ -35,7 +31,6 @@ export default function ProfilPage({ params }: PageProps) {
 
   return (
     <MobileFrame>
-      {/* Header */}
       <div
         className="px-5 pt-10 pb-6"
         style={{ background: "linear-gradient(135deg, #9B59B6, #4A90E2)" }}

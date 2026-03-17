@@ -10,13 +10,13 @@ interface TabBarProps {
 }
 
 const TABS = [
-  { id: "home" as ActiveTab, label: "Accueil", icon: "🏠", path: (id: string) => `/enfant/${id}` },
-  { id: "quetes" as ActiveTab, label: "Quêtes", icon: "⚔️", path: (id: string) => `/enfant/${id}` },
-  { id: "catalogue" as ActiveTab, label: "Catalogue", icon: "🎁", path: (id: string) => `/enfant/${id}/catalogue` },
-  { id: "profil" as ActiveTab, label: "Profil", icon: "👤", path: (id: string) => `/enfant/${id}/profil` },
+  { id: "home" as ActiveTab, label: "Accueil", icon: "🏠", path: "/enfant" },
+  { id: "quetes" as ActiveTab, label: "Quêtes", icon: "⚔️", path: "/enfant" },
+  { id: "catalogue" as ActiveTab, label: "Catalogue", icon: "🎁", path: "/enfant/catalogue" },
+  { id: "profil" as ActiveTab, label: "Profil", icon: "👤", path: "/enfant/profil" },
 ];
 
-export default function TabBar({ activeTab, enfantId }: TabBarProps) {
+export default function TabBar({ activeTab }: TabBarProps) {
   const router = useRouter();
 
   return (
@@ -27,7 +27,7 @@ export default function TabBar({ activeTab, enfantId }: TabBarProps) {
           return (
             <button
               key={tab.id}
-              onClick={() => router.push(tab.path(enfantId))}
+              onClick={() => router.push(tab.path)}
               className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
                 isActive
                   ? "bg-primary text-white"

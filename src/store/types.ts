@@ -98,10 +98,14 @@ export interface AppState {
   famille: Famille | null;
   completions: CompletionTache[];
   rachats: Rachat[];
+  activeEnfantId: string | null;
+  activeTacheId: string | null;
   // Actions
   creerFamille: (nom: string) => void;
   creerEnfant: (data: CreateEnfantInput) => string;
   validerTache: (enfantId: string, tacheId: string) => ValidationResult;
   rachatRecompense: (enfantId: string, recompenseId: string) => void;
   validerStreak: (enfantId: string, tacheId: string) => void;
+  setActiveEnfant: (id: string) => void;
+  setActiveTache: (id: string | null) => void;
 }

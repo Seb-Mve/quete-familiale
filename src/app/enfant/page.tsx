@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/store";
 import MobileFrame from "@/components/ui/MobileFrame";
@@ -11,25 +11,27 @@ import TaskCard from "@/components/ui/TaskCard";
 import { getTitreNiveau, isTacheCompleteAujourdhui } from "@/store/selectors";
 import { TACHES } from "@/data/taches";
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function DashboardEnfantPage({ params }: PageProps) {
-  const { id } = use(params);
+export default function DashboardEnfantPage() {
   const router = useRouter();
   const famille = useStore((s) => s.famille);
+  const activeEnfantId = useStore((s) => s.activeEnfantId);
   const completions = useStore((s) => s.completions);
+  const setActiveTache = useStore((s) => s.setActiveTache);
 
-  const enfant = famille?.enfants.find((e) => e.id === id);
+  const enfant = famille?.enfants.find((e) => e.id === activeEnfantId);
 
   useEffect(() => {
-    if (!enfant) router.replace("/famille");
-  }, [enfant, router]);
+    if (!activeEnfantId || !enfant) router.replace("/famille");
+  }, [activeEnfantId, enfant, router]);
 
   if (!enfant) return null;
 
   const titre = getTitreNiveau(enfant);
+
+  const handleTacheClick = (tacheId: string) => {
+    setActiveTache(tacheId);
+    router.push("/enfant/validation");
+  };
 
   return (
     <MobileFrame>
@@ -46,8 +48,6 @@ export default function DashboardEnfantPage({ params }: PageProps) {
             <p className="text-white/60 text-xs mt-0.5">Niveau {enfant.niveau}</p>
           </div>
         </div>
-
-        {/* XP Bar */}
         <div className="mt-4">
           <XPBar xp={enfant.xp} xpMax={enfant.xpPourProchainNiveau} niveau={enfant.niveau} />
         </div>
@@ -67,7 +67,7 @@ export default function DashboardEnfantPage({ params }: PageProps) {
         <h2 className="text-lg font-extrabold text-app-text mb-3">⚔️ Quêtes du jour</h2>
         <div className="flex flex-col gap-2">
           {TACHES.map((tache) => {
-            const complete = isTacheCompleteAujourdhui({ completions }, id, tache.id);
+            const complete = isTacheCompleteAujourdhui({ completions }, enfant.id, tache.id);
             const streak = enfant.streaks[tache.id] ?? 0;
             return (
               <TaskCard
@@ -75,7 +75,7 @@ export default function DashboardEnfantPage({ params }: PageProps) {
                 tache={tache}
                 complete={complete}
                 streak={streak}
-                onClick={() => router.push(`/enfant/${id}/validation/${tache.id}`)}
+                onClick={() => handleTacheClick(tache.id)}
               />
             );
           })}
