@@ -14,7 +14,7 @@ export default function Home() {
     const searchParams = new URLSearchParams(window.location.search);
     const redirectPath = searchParams.get("p");
     if (redirectPath) {
-      window.history.replaceState(null, "", "/quete-familiale" + redirectPath);
+      window.history.replaceState(null, "", redirectPath);
       router.replace(redirectPath);
       return;
     }
